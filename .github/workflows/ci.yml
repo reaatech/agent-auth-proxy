@@ -49,7 +49,7 @@ jobs:
           AGENT_JWT_SECRET: ci-agent-jwt-secret-32-bytes-long!!
           ADMIN_API_KEY: ci-admin-api-key-secret-32b!!
       - name: Upload coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: ./coverage/lcov.info
           fail_ci_if_error: false
