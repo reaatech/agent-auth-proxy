@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-auth-proxy
+spec:
+  selector:
+    app: agent-auth-proxy
+  ports:
+  - port: 80
+    targetPort: 3000
+    name: http
+  type: ClusterIP

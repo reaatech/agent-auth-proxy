@@ -1,0 +1,67 @@
+services:
+  proxy:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://user:pass@db:5432/agent_auth
+      - MASTER_KEY=${MASTER_KEY:-YUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE=}
+      - AGENT_JWT_SECRET=${AGENT_JWT_SECRET:-dev-agent-secret-change}
+      - ADMIN_API_KEY=${ADMIN_API_KEY:-dev-admin-key-change}
+      - OAUTH_REDIRECT_URI=http://localhost:3000
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1)).on('error', () => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=agent_auth
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d agent_auth"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  # Redis is planned for v2 distributed rate limiting
+  # redis:
+  #   image: redis:7-alpine
+  #   volumes:
+  #     - redis_data:/data
+  #   ports:
+  #     - "6379:6379"
+
+  migrate:
+    build:
+      context: .
+      target: builder
+    command: ["pnpm", "db:migrate"]
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/agent_auth
+      - MASTER_KEY=${MASTER_KEY:-YUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE=}
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles: ["setup"]
+
+volumes:
+  postgres_data:
