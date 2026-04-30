@@ -53,7 +53,7 @@ The agent-auth-proxy is a stateful, identity-aware reverse proxy that sits betwe
 - Rate limiting and DDoS protection
 - Request/response logging
 
-**Technology:** Fastify 4.x with plugins
+**Technology:** Fastify 5.x with plugins
 
 **Key Features:**
 - High-performance HTTP handling
@@ -554,7 +554,7 @@ CREATE INDEX idx_audit_logs_event_type ON audit_logs(event_type);
 **Proxy API CORS:**
 - `Access-Control-Allow-Origin`: Configured via `ALLOWED_ORIGINS` env var (no wildcards in production)
 - `Access-Control-Allow-Methods`: `GET, POST, PUT, PATCH, DELETE, OPTIONS`
-- `Access-Control-Allow-Headers`: `Authorization, X-User-ID, X-Agent-ID, X-Requested-Scopes, Content-Type`
+- `Access-Control-Allow-Headers`: `Authorization, X-User-ID, X-Admin-API-Key, Content-Type`
 - `Access-Control-Max-Age`: 86400 seconds
 - Credentials: not allowed (agents use Bearer tokens, not cookies)
 
@@ -814,23 +814,22 @@ The proxy preserves the original HTTP method and passes through the request path
 
 **Request Format:**
 ```http
-GET|POST|PUT|PATCH|DELETE /proxy/{provider}/{path...}
+GET|POST|PUT|PATCH|DELETE /proxy/{provider}/{path...}?_scope={comma,separated,scopes}
 Host: proxy.example.com
 Authorization: Bearer {agent_jwt}
 X-User-ID: {user_id}
-X-Agent-ID: {agent_id}
-X-Requested-Scopes: {comma_separated_scopes}  # Optional: enforce subset check
 Content-Type: application/json
 
 { ... request body forwarded as-is ... }
 ```
+
+The agent identity is derived from the JWT — no `X-Agent-ID` header is required. Scopes are passed as the `_scope` query parameter (optional; when present, the server enforces that the requested scopes are a subset of what's been granted).
 
 **Response Format:**
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 X-Request-ID: {uuid}
-X-User-ID: {user_id}
 X-Duration-Ms: {duration}
 
 { ... response body forwarded as-is ... }
@@ -851,22 +850,20 @@ Agents must authenticate to the proxy before making proxied requests. The proxy 
 
 **Agent Registration Flow:**
 ```
-1. Admin creates agent record
+1. Admin creates agent record (api_key returned in the same response, shown once)
    POST /api/v1/agents
-   → Returns agent_id
+   Body: { name: "...", description?: "..." }
+   → Returns { id, name, ..., api_key: "aap_..." }   # prefix: aap_
 
-2. Admin generates agent API key (one-time, shown once)
-   POST /api/v1/agents/:id/api-key
-   → Returns { api_key: "aap_..." }  # prefix: aap_
-
-3. Agent exchanges API key for JWT (short-lived, e.g., 1 hour)
-   POST /api/v1/auth/token
+2. Agent exchanges API key for JWT (short-lived, e.g., 1 hour)
+   POST /auth/agent
    Headers: Authorization: Bearer {agent_api_key}
-   → Returns { access_token: {jwt}, expires_in: 3600 }
+   → Returns { token: {jwt}, agent: { id, name } }
 
-4. Agent uses JWT for all proxied requests
+3. Agent uses JWT for all proxied requests
    GET /proxy/google/calendar/v3/calendars/primary
    Headers: Authorization: Bearer {agent_jwt}, X-User-ID: {user_id}
+   Query (optional): ?_scope=<comma,separated,scopes>
 ```
 
 **Agent JWT Claims:**
@@ -893,10 +890,9 @@ GET    /api/v1/users/:id/grants   # Get user's grants
 
 **Agent Management:**
 ```
-POST   /api/v1/agents             # Register agent
+POST   /api/v1/agents             # Register agent — response includes one-time api_key
 GET    /api/v1/agents/:id         # Get agent
 DELETE /api/v1/agents/:id         # Delete agent
-POST   /api/v1/agents/:id/api-key # Generate API key (one-time)
 ```
 
 **Grant Management:**
@@ -906,11 +902,10 @@ GET    /api/v1/grants             # List grants
 DELETE /api/v1/grants/:id         # Revoke grant
 ```
 
-**Token Management (Internal Only):**
+**Token Management (admin only):**
 ```
-POST   /api/v1/tokens/refresh     # Trigger proactive token refresh
-DELETE /api/v1/tokens/:id         # Revoke token
 GET    /api/v1/tokens             # List tokens (metadata only, no secrets)
+DELETE /api/v1/tokens/:id         # Revoke token
 ```
 
 **Note:** There is no endpoint to retrieve decrypted OAuth tokens or API keys. Credentials are attached by the proxy internally and never exposed to agents.

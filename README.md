@@ -5,9 +5,9 @@ Identity-aware reverse proxy for secure agent-to-service communication.
 A stateful proxy layer that sits between AI agents and downstream APIs (Google, GitHub, etc.), managing OAuth2 tokens, API keys, and scope enforcement on behalf of users. Built with a zero-trust security model — every request is authenticated, authorized, and audited.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D20.0.0-green)](package.json)
-[![pnpm](https://img.shields.io/badge/pnpm-%3E%3D9.0.0-orange)](package.json)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3%2B-blue)](tsconfig.json)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D22.0.0-green)](package.json)
+[![pnpm](https://img.shields.io/badge/pnpm-%3E%3D10.0.0-orange)](package.json)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8%2B-blue)](tsconfig.json)
 
 ---
 
@@ -85,18 +85,21 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed component design, security m
 
 | Layer | Technology |
 |---|---|
-| **Runtime** | Node.js 20+ |
+| **Runtime** | Node.js 22+ |
 | **Framework** | Fastify 5 |
-| **Language** | TypeScript 5.3+ (strict mode) |
+| **Language** | TypeScript 5.8+ (strict mode) |
 | **Database** | PostgreSQL 15+ |
 | **ORM** | Drizzle ORM |
 | **Auth** | `@fastify/jwt`, PKCE OAuth2 |
 | **Validation** | Zod |
 | **Logging** | Pino (structured JSON) |
 | **Metrics** | prom-client |
-| **Package Manager** | pnpm 9+ |
+| **Package Manager** | pnpm 10+ (workspaces) |
+| **Build orchestration** | Turborepo |
 | **Build** | tsup |
+| **Lint/format** | Biome |
 | **Test** | Vitest, Supertest |
+| **Versioning** | Changesets |
 | **Container** | Docker, Docker Compose |
 | **Orchestration** | Kubernetes (manifests provided) |
 
@@ -104,8 +107,8 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed component design, security m
 
 ## Prerequisites
 
-- **Node.js** >= 20.0.0
-- **pnpm** >= 9.0.0
+- **Node.js** >= 22.0.0
+- **pnpm** >= 10.0.0
 - **PostgreSQL** 15+ (or Docker for local development)
 - **Docker & Docker Compose** (optional, for containerized setup)
 
@@ -212,29 +215,28 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ### Agent Authentication
 
 ```
-POST /api/v1/auth/token
+POST /auth/agent
 Authorization: Bearer <agent_api_key>
 
-Response: { access_token: "<jwt>", expires_in: 3600 }
+Response: { "token": "<jwt>", "agent": { "id": "<uuid>", "name": "<string>" } }
 ```
 
-Agents exchange their long-lived API key (prefix `aap_`) for a short-lived JWT (default 1 hour). The JWT is then used as a Bearer token for all proxied requests.
+Agents exchange their long-lived API key (prefix `aap_`) for a short-lived JWT (default 1 hour). The JWT is then used as a Bearer token for all proxied requests. Agent API keys are returned by `POST /api/v1/agents` at registration time — they are shown only once.
 
 ### Proxy Requests
 
 Proxied requests forward method, path, headers, and body to the target downstream API with the user's credentials attached.
 
 ```
-METHOD /proxy/:provider/:path
+METHOD /proxy/:provider/<path...>
 Authorization: Bearer <agent_jwt>
 X-User-ID: <user_id>
-X-Requested-Scopes: <comma_separated_scopes>   # Optional: enforce scopes
+?_scope=<comma,separated,scopes>      # Optional: enforce scopes
 
 # Example: Read Google Calendar
-curl -X GET "http://localhost:3000/proxy/google/calendar/v3/calendars/primary" \
+curl -X GET "http://localhost:3000/proxy/google/calendar/v3/calendars/primary?_scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly" \
   -H "Authorization: Bearer <agent_jwt>" \
-  -H "X-User-ID: <user_id>" \
-  -H "X-Requested-Scopes: https://www.googleapis.com/auth/calendar.readonly"
+  -H "X-User-ID: <user_id>"
 ```
 
 The proxy forwards status codes, headers, and body directly from the downstream API. No response envelope — compatible with standard HTTP clients and SDKs.
@@ -243,7 +245,7 @@ The proxy forwards status codes, headers, and body directly from the downstream 
 
 ### Management API
 
-All management endpoints require the admin API key passed via the `X-Admin-API-Key` header.
+All management endpoints are mounted under `/api/v1` and require the admin API key passed via the `X-Admin-API-Key` header.
 
 **Users:**
 | Method | Path | Description |
@@ -256,10 +258,9 @@ All management endpoints require the admin API key passed via the `X-Admin-API-K
 **Agents:**
 | Method | Path | Description |
 |---|---|---|
-| `POST` | `/api/v1/agents` | Register a new agent |
+| `POST` | `/api/v1/agents` | Register a new agent (response includes the one-time `api_key`) |
 | `GET` | `/api/v1/agents/:id` | Get agent details |
 | `DELETE` | `/api/v1/agents/:id` | Delete an agent |
-| `POST` | `/api/v1/agents/:id/api-key` | Generate agent API key (shown once) |
 
 **Grants:**
 | Method | Path | Description |
@@ -268,11 +269,21 @@ All management endpoints require the admin API key passed via the `X-Admin-API-K
 | `GET` | `/api/v1/grants` | List all grants |
 | `DELETE` | `/api/v1/grants/:id` | Revoke a grant |
 
+**Tokens:**
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/v1/tokens` | List OAuth token metadata (no secrets) |
+| `DELETE` | `/api/v1/tokens/:id` | Revoke a token |
+
 **OAuth:**
 | Method | Path | Description |
 |---|---|---|
-| `POST` | `/oauth/:provider/authorize` | Initiate OAuth2 authorization flow |
+| `GET` | `/oauth/authorize?user_id&provider&scopes` | Initiate OAuth2 authorization flow (redirects to provider) |
 | `GET` | `/oauth/:provider/callback` | OAuth2 callback (handled by provider redirect) |
+
+### Client SDK
+
+A typed TypeScript SDK is published as `@reaatech/agent-auth-proxy-client`. It wraps these endpoints with `AgentClient` (auth + proxy) and `AdminClient` (management). See [`packages/client/README.md`](packages/client/README.md).
 
 ---
 
@@ -320,11 +331,10 @@ pnpm audit
 ### Code Quality
 
 CI enforces:
-- ESLint with `@typescript-eslint` rules
-- Prettier formatting
-- TypeScript strict mode (`tsc --noEmit`)
-- Test coverage thresholds (85% lines, 85% functions, 80% branches)
-- pnpm audit at moderate level and above
+- Biome lint + format (`pnpm lint`, `pnpm format:check`)
+- TypeScript strict mode (`pnpm typecheck`)
+- Test coverage thresholds (85% lines, 85% functions, 78% branches)
+- `pnpm audit` at moderate level and above
 
 ---
 
@@ -373,37 +383,54 @@ kubectl apply -f k8s/
 
 ## Project Structure
 
+This is a pnpm + Turborepo monorepo with three publishable packages.
+
 ```
 agent-auth-proxy/
-├── src/
-│   ├── api/              # Route handlers and middleware
-│   ├── auth/             # OAuth2 managers, JWT strategies, PKCE
-│   ├── config/           # Environment and app configuration
-│   ├── db/
-│   │   ├── schema/       # Drizzle ORM table definitions
-│   │   └── migrations/   # SQL migration files
-│   ├── proxy/            # Proxy engine (interception, credential attachment)
-│   ├── services/         # Business logic (users, grants, tokens, audit)
-│   ├── types/            # Shared TypeScript type definitions
-│   ├── utils/            # Utilities (crypto, encryption, validation)
-│   └── app.ts            # Application entry point
-├── tests/                # Vitest test suites
-├── docs/                 # Extended documentation
-│   ├── api/              # API reference docs
-│   ├── architecture/     # Architecture decision records
-│   └── deployment/       # Deployment guides
-├── scripts/              # Migration and seed scripts
-├── skills/               # AI agent development skill definitions
-├── k8s/                  # Kubernetes manifests
-├── docker/               # Docker configuration
-├── .github/workflows/    # CI/CD pipeline definitions
-├── Dockerfile            # Multi-stage production Dockerfile
-├── docker-compose.yml    # Local development stack
-├── package.json          # Dependencies and scripts
-├── tsconfig.json         # TypeScript configuration
-├── vitest.config.ts      # Test runner configuration
-└── drizzle.config.ts     # Drizzle ORM configuration
+├── packages/
+│   ├── core/                          # @reaatech/agent-auth-proxy-core
+│   │   └── src/                       # zod schemas, OAuth/scope types, error classes
+│   ├── client/                        # @reaatech/agent-auth-proxy-client
+│   │   └── src/                       # AgentClient + AdminClient SDKs (fetch-based)
+│   └── server/                        # @reaatech/agent-auth-proxy-server
+│       ├── src/
+│       │   ├── api/                   # Fastify routes and middleware
+│       │   ├── auth/                  # OAuth2 manager, key vault, scope enforcer
+│       │   ├── config/                # Environment and app configuration
+│       │   ├── db/
+│       │   │   ├── schema/            # Drizzle ORM table definitions
+│       │   │   └── migrations/        # SQL migration files
+│       │   ├── proxy/                 # Proxy engine
+│       │   ├── services/              # Audit logging, cleanup tasks
+│       │   ├── utils/                 # Crypto, logger
+│       │   ├── app.ts                 # buildApp() / start() — library entry
+│       │   └── bin.ts                 # CLI entry (#!/usr/bin/env node)
+│       ├── tests/                     # Vitest suites (unit + integration + security)
+│       ├── scripts/                   # migrate.ts, seed.ts
+│       ├── drizzle.config.ts
+│       └── vitest.config.ts
+├── docs/                              # Extended documentation
+├── skills/                            # AI agent development skill definitions
+├── k8s/                               # Kubernetes manifests
+├── docker/                            # Docker assets
+├── .github/workflows/                 # CI/CD pipeline definitions
+├── .changeset/                        # Changesets for versioning + publishing
+├── Dockerfile                         # Builds and runs packages/server
+├── docker-compose.yml                 # Local development stack
+├── pnpm-workspace.yaml
+├── turbo.json
+├── biome.json
+├── tsconfig.json                      # Shared base config
+└── package.json                       # Workspace root (private)
 ```
+
+### Package responsibilities
+
+| Package | Purpose | Depends on |
+|---|---|---|
+| `@reaatech/agent-auth-proxy-core` | Shared zod schemas, OAuth/scope types, error classes. No framework deps. | `zod` |
+| `@reaatech/agent-auth-proxy-client` | Typed HTTP SDK (`AgentClient`, `AdminClient`) for talking to the proxy. | `core` |
+| `@reaatech/agent-auth-proxy-server` | Fastify-based proxy server. Embeddable via `buildApp()`/`start()`, runnable via the `agent-auth-proxy-server` bin. | `core` |
 
 ---
 
@@ -424,13 +451,13 @@ For reporting vulnerabilities, see [SECURITY.md](SECURITY.md). Do not open publi
 Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
 
 - Development setup
-- Code style (ESLint, Prettier, Conventional Commits)
+- Code style (Biome, Conventional Commits)
 - Testing requirements
-- Pull request process
+- Pull request process (Changesets for versioning)
 - Security best practices
 
 ---
 
 ## License
 
-MIT © 2026 agent-auth-proxy contributors. See [LICENSE](LICENSE) for full terms.
+MIT © 2026 Rick Somers. See [LICENSE](LICENSE) for full terms.

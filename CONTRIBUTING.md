@@ -47,33 +47,45 @@ Examples of unacceptable behavior:
 
 ### Prerequisites
 
-- Node.js 20+ (LTS version recommended)
-- pnpm 9+
+- Node.js 22+ (LTS version recommended)
+- pnpm 10+
 - PostgreSQL 15+ (for development)
 - Docker and Docker Compose (optional, for containerized development)
 - Git
 
 ### Repository Structure
 
+This is a pnpm + Turborepo monorepo with three publishable packages.
+
 ```
 agent-auth-proxy/
-├── src/                    # Source code
-│   ├── api/               # API routes and middleware
-│   ├── auth/              # Authentication strategies and managers
-│   ├── config/            # Configuration files
-│   ├── db/                # Database schema and migrations
-│   ├── services/          # Business logic services
-│   ├── types/             # TypeScript type definitions
-│   ├── utils/             # Utility functions
-│   └── proxy/             # Proxy engine
-├── tests/                 # Test files
-├── docs/                  # Documentation
-├── skills/                # Agent skills for development
-├── scripts/               # Utility scripts
-├── .github/               # GitHub workflows and templates
-├── docker/                # Docker configuration
-├── k8s/                   # Kubernetes manifests
-└── package.json           # Project dependencies
+├── packages/
+│   ├── core/                  # @reaatech/agent-auth-proxy-core (zod, types, errors)
+│   ├── client/                # @reaatech/agent-auth-proxy-client (typed SDK)
+│   └── server/                # @reaatech/agent-auth-proxy-server (Fastify app)
+│       ├── src/
+│       │   ├── api/           # Routes and middleware
+│       │   ├── auth/          # OAuth2 manager, key vault, scope enforcer
+│       │   ├── config/        # Environment + app configuration
+│       │   ├── db/            # Drizzle schema and migrations
+│       │   ├── proxy/         # Proxy engine
+│       │   ├── services/      # Audit logging, cleanup tasks
+│       │   ├── utils/         # Crypto, logger
+│       │   ├── app.ts         # buildApp() / start() — library entry
+│       │   └── bin.ts         # CLI entry
+│       ├── tests/
+│       └── scripts/           # migrate.ts, seed.ts
+├── docs/                      # Documentation
+├── skills/                    # Agent skill definitions
+├── .github/                   # GitHub workflows
+├── .changeset/                # Changesets for versioning
+├── docker/                    # Docker assets
+├── k8s/                       # Kubernetes manifests
+├── Dockerfile                 # Builds + runs packages/server
+├── pnpm-workspace.yaml
+├── turbo.json
+├── biome.json
+└── package.json               # Workspace root (private)
 ```
 
 ## Development Setup
@@ -195,10 +207,10 @@ Unsure where to start? Look for issues labeled:
 
 ### Code Style
 
-We use ESLint and Prettier to maintain consistent code style:
+We use [Biome](https://biomejs.dev) for both linting and formatting (one tool, no Prettier):
 
 ```bash
-# Check code style
+# Check lint + format
 pnpm run lint
 
 # Fix auto-fixable issues
@@ -207,9 +219,11 @@ pnpm run lint:fix
 # Format code
 pnpm run format
 
-# Check formatting
+# Check formatting only
 pnpm run format:check
 ```
+
+Biome runs across the whole workspace from the root — there are no per-package lint configs.
 
 ### Commit Messages
 
@@ -267,7 +281,7 @@ pnpm run test:security
 * Include unit, integration, and security tests
 * Use descriptive test names
 
-**Example Test Structure:**
+**Example Test Structure** (server package — `packages/server/tests/...`):
 
 ```typescript
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -283,7 +297,7 @@ describe('OAuth2Manager', () => {
   describe('generatePKCE', () => {
     it('should generate valid PKCE parameters', () => {
       const { codeVerifier, codeChallenge, state } = oauth2Manager.generatePKCE();
-      
+
       expect(codeVerifier).toHaveLength(43);
       expect(codeChallenge).toHaveLength(43);
       expect(state).toHaveLength(22);
@@ -291,6 +305,8 @@ describe('OAuth2Manager', () => {
   });
 });
 ```
+
+The `@/*` path alias resolves to `packages/server/src/*` from inside the server package. Cross-package imports use the package name, e.g. `import { AuthError } from '@reaatech/agent-auth-proxy-core'`.
 
 ## Pull Request Process
 
@@ -314,9 +330,11 @@ describe('OAuth2Manager', () => {
    pnpm run test
    ```
 
-4. **Update CHANGELOG.md**
-   - Add entry under appropriate section
-   - Include PR number and GitHub username
+4. **Add a Changeset**
+   - Run `pnpm changeset` and follow the prompts.
+   - Pick the affected package(s): `@reaatech/agent-auth-proxy-core`, `-client`, `-server`.
+   - Choose a bump level (patch / minor / major) and write a one-line summary — this becomes the changelog entry on release.
+   - Commit the generated `.changeset/*.md` file with your PR.
 
 ### Submitting PR
 
