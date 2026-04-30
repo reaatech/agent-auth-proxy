@@ -33,7 +33,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm ls --depth=0
@@ -49,13 +49,13 @@ jobs:
       - name: Upload coverage
         uses: codecov/codecov-action@v6
         with:
-          files: ./coverage/lcov.info
+          files: ./packages/server/coverage/lcov.info
           fail_ci_if_error: false
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
-          path: coverage/
+          path: packages/server/coverage/
 
   build:
     needs: test
