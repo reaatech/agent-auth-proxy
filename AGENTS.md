@@ -68,10 +68,11 @@ Skills are documentation-driven development guides. The agent:
 4. State is implicit in the filesystem (code, migrations, configs)
 
 ### State Sharing
-- Database schema is shared across all skills via `src/db/schema/`
-- Configuration is shared via `src/config/` and environment variables
-- Types are shared via `src/types/`
-- Services are shared via `src/services/`
+- Database schema lives in `packages/server/src/db/schema/`
+- Server configuration is in `packages/server/src/config/` and environment variables
+- Cross-package types, zod schemas, and error classes live in `packages/core/src/` (published as `@reaatech/agent-auth-proxy-core`)
+- Server-internal services live in `packages/server/src/services/`
+- The client SDK lives in `packages/client/src/` (published as `@reaatech/agent-auth-proxy-client`)
 
 ### Error Handling
 - If a skill fails validation, the agent must fix it before proceeding
@@ -97,14 +98,26 @@ This project uses GitHub user `reaatech` for:
 
 ### Repository Structure
 
+This is a pnpm + Turborepo monorepo. The deployable service lives in `packages/server`; the publishable SDK and shared types live in `packages/client` and `packages/core` respectively.
+
 ```
 github.com/reaatech/agent-auth-proxy
-├── src/
-├── skills/
-├── tests/
+├── packages/
+│   ├── core/                # @reaatech/agent-auth-proxy-core (zod schemas, types, errors)
+│   ├── client/              # @reaatech/agent-auth-proxy-client (typed HTTP SDK)
+│   └── server/              # @reaatech/agent-auth-proxy-server (Fastify app)
+│       ├── src/
+│       ├── tests/
+│       └── scripts/         # migrate.ts, seed.ts
+├── skills/                  # Agent skill definitions
 ├── docs/
-├── Dockerfile
+├── k8s/
+├── .changeset/
+├── Dockerfile               # Builds and runs packages/server
 ├── docker-compose.yml
-├── package.json
+├── pnpm-workspace.yaml
+├── turbo.json
+├── biome.json
+├── package.json             # Workspace root (private)
 └── README.md
 ```
