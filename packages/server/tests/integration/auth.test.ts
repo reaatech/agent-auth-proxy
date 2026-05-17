@@ -34,7 +34,7 @@ describe.skipIf(!(await isDbAvailable()))('Auth Endpoints', () => {
 
   it('should return 400 for unknown provider in authorize', async () => {
     const res = await app.get('/oauth/authorize').query({
-      user_id: '00000000-0000-0000-0000-000000000001',
+      user_id: '00000000-0000-4000-8000-000000000001',
       provider: 'unknown',
       scopes: 'email',
     });
@@ -45,10 +45,10 @@ describe.skipIf(!(await isDbAvailable()))('Auth Endpoints', () => {
   it('should initiate authorization for valid request', async () => {
     await db
       .insert(users)
-      .values({ id: '00000000-0000-0000-0000-000000000003', email: 'auth@example.com' })
+      .values({ id: '00000000-0000-4000-8000-000000000003', email: 'auth@example.com' })
       .onConflictDoNothing();
     const res = await app.get('/oauth/authorize').query({
-      user_id: '00000000-0000-0000-0000-000000000003',
+      user_id: '00000000-0000-4000-8000-000000000003',
       provider: 'google',
       scopes: 'email,profile',
     });
@@ -75,7 +75,7 @@ describe.skipIf(!(await isDbAvailable()))('Auth Endpoints', () => {
   });
 
   it('should handle callback with valid state', async () => {
-    const userId = '00000000-0000-0000-0000-000000000004';
+    const userId = '00000000-0000-4000-8000-000000000004';
     await db
       .insert(users)
       .values({ id: userId, email: 'callback@example.com' })

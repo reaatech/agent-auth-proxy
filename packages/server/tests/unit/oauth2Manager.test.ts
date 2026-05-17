@@ -21,7 +21,7 @@ describe.skipIf(!(await isDbAvailable()))('OAuth2Manager', () => {
     ],
   });
 
-  const userId = '00000000-0000-0000-0000-000000000002';
+  const userId = '00000000-0000-4000-8000-000000000002';
 
   beforeEach(async () => {
     await db.delete(oauthStates).where(eq(oauthStates.userId, userId));

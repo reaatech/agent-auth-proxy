@@ -3,15 +3,14 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@auth/*": ["src/auth/*"],
-      "@config/*": ["src/config/*"],
-      "@db/*": ["src/db/*"],
-      "@services/*": ["src/services/*"],
-      "@utils/*": ["src/utils/*"],
-      "@proxy/*": ["src/proxy/*"]
+      "@/*": ["./src/*"],
+      "@auth/*": ["./src/auth/*"],
+      "@config/*": ["./src/config/*"],
+      "@db/*": ["./src/db/*"],
+      "@services/*": ["./src/services/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@proxy/*": ["./src/proxy/*"]
     }
   },
   "include": ["src/**/*"]

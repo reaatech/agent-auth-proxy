@@ -148,14 +148,14 @@ describe.skipIf(!(await isDbAvailable()))('Management API', () => {
 
   it('should return 404 for missing user', async () => {
     const res = await app
-      .get('/api/v1/users/00000000-0000-0000-0000-000000000000')
+      .get('/api/v1/users/00000000-0000-4000-8000-000000000000')
       .set('X-Admin-API-Key', adminKey);
     expect(res.status).toBe(404);
   });
 
   it('should return 404 for missing agent', async () => {
     const res = await app
-      .get('/api/v1/agents/00000000-0000-0000-0000-000000000000')
+      .get('/api/v1/agents/00000000-0000-4000-8000-000000000000')
       .set('X-Admin-API-Key', adminKey);
     expect(res.status).toBe(404);
   });

@@ -12,8 +12,8 @@ describe('Validation schemas', () => {
     const valid = {
       provider: 'google',
       path: '/v1/calendars',
-      userId: '00000000-0000-0000-0000-000000000001',
-      agentId: '00000000-0000-0000-0000-000000000002',
+      userId: '00000000-0000-4000-8000-000000000001',
+      agentId: '00000000-0000-4000-8000-000000000002',
     };
     expect(proxyRequestSchema.safeParse(valid).success).toBe(true);
   });
@@ -22,8 +22,8 @@ describe('Validation schemas', () => {
     const invalid = {
       provider: 'Google!',
       path: '/v1/calendars',
-      userId: '00000000-0000-0000-0000-000000000001',
-      agentId: '00000000-0000-0000-0000-000000000002',
+      userId: '00000000-0000-4000-8000-000000000001',
+      agentId: '00000000-0000-4000-8000-000000000002',
     };
     expect(proxyRequestSchema.safeParse(invalid).success).toBe(false);
   });
@@ -33,14 +33,14 @@ describe('Validation schemas', () => {
       provider: 'google',
       path: '/v1/calendars',
       userId: 'not-a-uuid',
-      agentId: '00000000-0000-0000-0000-000000000002',
+      agentId: '00000000-0000-4000-8000-000000000002',
     };
     expect(proxyRequestSchema.safeParse(invalid).success).toBe(false);
   });
 
   it('should validate OAuth initiate', () => {
     const valid = {
-      user_id: '00000000-0000-0000-0000-000000000001',
+      user_id: '00000000-0000-4000-8000-000000000001',
       provider: 'google',
       scopes: 'email,profile',
     };

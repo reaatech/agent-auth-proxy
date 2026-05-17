@@ -60,7 +60,7 @@ describe('AgentClient', () => {
       client.proxy({
         provider: 'google',
         path: 'calendar/v3/events',
-        userId: '00000000-0000-0000-0000-000000000001',
+        userId: '00000000-0000-4000-8000-000000000001',
       }),
     ).rejects.toThrow(AuthError);
   });
@@ -82,7 +82,7 @@ describe('AgentClient', () => {
     await client.proxy({
       provider: 'google',
       path: 'calendar/v3/events',
-      userId: '00000000-0000-0000-0000-000000000001',
+      userId: '00000000-0000-4000-8000-000000000001',
       scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
     });
 
@@ -91,7 +91,7 @@ describe('AgentClient', () => {
       'http://localhost:3000/proxy/google/calendar/v3/events?_scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly',
     );
     expect(init.headers.Authorization).toBe('Bearer jwt-token');
-    expect(init.headers['X-User-ID']).toBe('00000000-0000-0000-0000-000000000001');
+    expect(init.headers['X-User-ID']).toBe('00000000-0000-4000-8000-000000000001');
   });
 
   it('strips a leading slash from the proxy path', async () => {
@@ -111,7 +111,7 @@ describe('AgentClient', () => {
     await client.proxy({
       provider: 'google',
       path: '/calendar/v3/events',
-      userId: '00000000-0000-0000-0000-000000000001',
+      userId: '00000000-0000-4000-8000-000000000001',
     });
 
     const [url] = fetchMock.mock.calls[1];

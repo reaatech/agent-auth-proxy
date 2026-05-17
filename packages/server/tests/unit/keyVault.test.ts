@@ -7,7 +7,7 @@ import { isDbAvailable } from '../utils';
 
 describe.skipIf(!(await isDbAvailable()))('KeyVault', () => {
   const vault = new KeyVault();
-  const userId = '00000000-0000-0000-0000-000000000001';
+  const userId = '00000000-0000-4000-8000-000000000001';
 
   beforeEach(async () => {
     await db.delete(apiKeys).where(eq(apiKeys.userId, userId));
@@ -39,7 +39,7 @@ describe.skipIf(!(await isDbAvailable()))('KeyVault', () => {
 
   it('should throw for missing key', async () => {
     await expect(
-      vault.getApiKey('00000000-0000-0000-0000-000000009999', 'nonexistent'),
+      vault.getApiKey('00000000-0000-4000-8000-000000009999', 'nonexistent'),
     ).rejects.toThrow('No valid API key');
   });
 
