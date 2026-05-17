@@ -1,6 +1,6 @@
-import { createPostgresPglite } from '@/db/postgres-pglite';
 import { PGlite } from '@electric-sql/pglite';
 import { describe, expect, it } from 'vitest';
+import { createPostgresPglite } from '@/db/postgres-pglite';
 
 describe('postgres-pglite', () => {
   it('should execute tagged template queries', async () => {

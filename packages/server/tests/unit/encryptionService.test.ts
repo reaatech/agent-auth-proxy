@@ -1,5 +1,5 @@
-import { EncryptionService } from '@/auth/services/encryptionService';
 import { describe, expect, it } from 'vitest';
+import { EncryptionService } from '@/auth/services/encryptionService';
 
 describe('EncryptionService', () => {
   it('should encrypt and decrypt data correctly', async () => {

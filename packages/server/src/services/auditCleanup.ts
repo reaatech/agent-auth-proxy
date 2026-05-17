@@ -1,8 +1,8 @@
+import { lt } from 'drizzle-orm';
 import { config } from '@/config';
 import { db } from '@/db';
 import { auditLogs } from '@/db/schema';
 import { logger } from '@/utils/logger';
-import { lt } from 'drizzle-orm';
 
 export async function cleanupExpiredAuditLogs(): Promise<number> {
   try {

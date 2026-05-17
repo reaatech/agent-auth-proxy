@@ -1,12 +1,19 @@
-export { AgentClient } from './agent-client';
-export type { AgentClientOptions, ProxyOptions } from './agent-client';
-export { AdminClient } from './admin-client';
+export {
+  AppError,
+  AuthError,
+  ScopeError,
+  UpstreamError,
+  ValidationError,
+} from '@reaatech/agent-auth-proxy-core';
 export type {
   AdminClientOptions,
   CreateAgentInput,
   CreateGrantInput,
   CreateUserInput,
 } from './admin-client';
+export { AdminClient } from './admin-client';
+export type { AgentClientOptions, ProxyOptions } from './agent-client';
+export { AgentClient } from './agent-client';
 export type {
   Agent,
   AgentSession,
@@ -18,10 +25,3 @@ export type {
   ReadinessStatus,
   User,
 } from './types';
-export {
-  AppError,
-  AuthError,
-  ScopeError,
-  UpstreamError,
-  ValidationError,
-} from '@reaatech/agent-auth-proxy-core';

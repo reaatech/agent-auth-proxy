@@ -7,7 +7,10 @@ export class AppError extends Error {
   ) {
     super(message);
     this.name = 'AppError';
-    const captureStackTrace = (Error as unknown as { captureStackTrace?: (target: object, ctor: Function) => void }).captureStackTrace;
+    const captureStackTrace =
+      // biome-ignore lint/complexity/noBannedTypes: matching Node.js Error.stackTraceLimit signature
+      (Error as unknown as { captureStackTrace?: (target: object, ctor: Function) => void })
+        .captureStackTrace;
     if (captureStackTrace) {
       captureStackTrace(this, this.constructor);
     }

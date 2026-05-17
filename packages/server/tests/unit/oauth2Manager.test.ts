@@ -1,8 +1,8 @@
+import { eq } from 'drizzle-orm';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { OAuth2Manager } from '@/auth/managers/oauth2Manager';
 import { db } from '@/db';
 import { oauthStates, oauthTokens, users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { isDbAvailable } from '../utils';
 
 describe.skipIf(!(await isDbAvailable()))('OAuth2Manager', () => {

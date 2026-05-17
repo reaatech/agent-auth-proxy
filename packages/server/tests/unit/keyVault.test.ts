@@ -1,8 +1,8 @@
+import { eq } from 'drizzle-orm';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { KeyVault } from '@/auth/managers/keyVault';
 import { db } from '@/db';
 import { apiKeys, users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { isDbAvailable } from '../utils';
 
 describe.skipIf(!(await isDbAvailable()))('KeyVault', () => {

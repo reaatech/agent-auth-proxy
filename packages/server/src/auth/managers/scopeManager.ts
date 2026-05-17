@@ -1,7 +1,7 @@
-import { db } from '@/db';
-import { agents, scopes as scopesTable, userAgentGrants } from '@/db/schema';
 import type { ScopeValidationResult } from '@reaatech/agent-auth-proxy-core';
 import { and, eq, gt, inArray, isNull, or } from 'drizzle-orm';
+import { db } from '@/db';
+import { agents, scopes as scopesTable, userAgentGrants } from '@/db/schema';
 
 export class ScopeEnforcer {
   private cache = new Map<string, { scopes: string[]; expiresAt: number }>();
@@ -29,7 +29,7 @@ export class ScopeEnforcer {
     const agent = await db.query.agents.findFirst({
       where: eq(agents.id, agentId),
     });
-    if (!agent || !agent.active) {
+    if (!agent?.active) {
       return {
         allowed: false,
         reason: 'AGENT_INACTIVE',

@@ -1,7 +1,7 @@
+import { lt } from 'drizzle-orm';
 import { db } from '@/db';
 import { oauthStates } from '@/db/schema';
 import { logger } from '@/utils/logger';
-import { lt } from 'drizzle-orm';
 
 export async function cleanupExpiredOAuthStates(): Promise<number> {
   try {

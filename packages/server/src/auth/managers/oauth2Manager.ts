@@ -1,9 +1,4 @@
 import { createHash, randomBytes } from 'node:crypto';
-import { EncryptionService } from '@/auth/services/encryptionService';
-import { db } from '@/db';
-import { oauthStates, oauthTokens, users } from '@/db/schema';
-import type { NewOAuthToken, OAuthToken } from '@/db/schema';
-import { type AuditLogger, getAuditLogger } from '@/services/auditService';
 import type {
   OAuth2IntegrationInputs,
   OAuth2TokenResponse,
@@ -11,6 +6,11 @@ import type {
   OAuthProviderConfig,
 } from '@reaatech/agent-auth-proxy-core';
 import { and, eq } from 'drizzle-orm';
+import { EncryptionService } from '@/auth/services/encryptionService';
+import { db } from '@/db';
+import type { NewOAuthToken, OAuthToken } from '@/db/schema';
+import { oauthStates, oauthTokens, users } from '@/db/schema';
+import { type AuditLogger, getAuditLogger } from '@/services/auditService';
 
 export class OAuth2Manager {
   private encryptionService: EncryptionService;

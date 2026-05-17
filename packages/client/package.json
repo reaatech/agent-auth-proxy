@@ -11,7 +11,9 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -36,7 +38,12 @@
   "engines": {
     "node": ">=22.0.0"
   },
-  "keywords": ["agent-auth-proxy", "client", "sdk", "oauth2"],
+  "keywords": [
+    "agent-auth-proxy",
+    "client",
+    "sdk",
+    "oauth2"
+  ],
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
   "license": "MIT",
   "repository": {

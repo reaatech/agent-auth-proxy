@@ -1,8 +1,8 @@
-import { buildApp } from '@/app';
-import { config } from '@/config';
 import { register } from 'prom-client';
 import supertest from 'supertest';
 import { describe, expect, it } from 'vitest';
+import { buildApp } from '@/app';
+import { config } from '@/config';
 
 describe('App', () => {
   it('should build without errors', async () => {

@@ -11,7 +11,9 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -34,7 +36,12 @@
   "engines": {
     "node": ">=22.0.0"
   },
-  "keywords": ["agent-auth-proxy", "types", "zod", "schemas"],
+  "keywords": [
+    "agent-auth-proxy",
+    "types",
+    "zod",
+    "schemas"
+  ],
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
   "license": "MIT",
   "repository": {

@@ -1,7 +1,7 @@
-import { authenticateAgentWithApiKey } from '@/api/middleware/auth';
-import { getOAuth2Manager } from '@/auth/managers/shared';
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { authenticateAgentWithApiKey } from '@/api/middleware/auth';
+import { getOAuth2Manager } from '@/auth/managers/shared';
 
 const authorizeQuerySchema = z.object({
   user_id: z.string().uuid(),

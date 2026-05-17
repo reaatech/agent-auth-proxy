@@ -1,10 +1,10 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes, scrypt } from 'node:crypto';
+import { and, eq } from 'drizzle-orm';
 import { config } from '@/config';
 import { db } from '@/db';
 import { apiKeys } from '@/db/schema';
 import { type AuditLogger, getAuditLogger } from '@/services/auditService';
 import { validateBase64Key } from '@/utils/crypto';
-import { and, eq } from 'drizzle-orm';
 
 const DEK_CACHE = new Map<string, { dek: Buffer; expiresAt: number }>();
 const DEK_CACHE_TTL_MS = 300_000;

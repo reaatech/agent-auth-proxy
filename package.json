@@ -41,7 +41,15 @@
     "node": ">=22.0.0",
     "pnpm": ">=10.0.0"
   },
-  "keywords": ["proxy", "auth", "oauth2", "api", "agent", "identity", "security"],
+  "keywords": [
+    "proxy",
+    "auth",
+    "oauth2",
+    "api",
+    "agent",
+    "identity",
+    "security"
+  ],
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
   "license": "MIT",
   "repository": {

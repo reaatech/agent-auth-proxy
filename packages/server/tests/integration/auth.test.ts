@@ -1,9 +1,9 @@
+import supertest from 'supertest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { buildApp } from '@/app';
 import { OAuth2Manager } from '@/auth/managers/oauth2Manager';
 import { db } from '@/db';
 import { users } from '@/db/schema';
-import supertest from 'supertest';
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { isDbAvailable } from '../utils';
 
 describe.skipIf(!(await isDbAvailable()))('Auth Endpoints', () => {

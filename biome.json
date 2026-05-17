@@ -1,9 +1,9 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.14/schema.json",
   "files": {
-    "ignore": ["dist", "coverage", "node_modules", ".turbo"]
+    "includes": ["**", "!!**/dist", "!!**/coverage", "!!**/node_modules", "!!**/.turbo"]
   },
-  "organizeImports": {
+  "assist": {
     "enabled": true
   },
   "linter": {

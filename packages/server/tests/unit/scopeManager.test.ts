@@ -1,9 +1,8 @@
+import { eq, sql } from 'drizzle-orm';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ScopeEnforcer } from '@/auth/managers/scopeManager';
 import { db } from '@/db';
 import { agents, scopes as scopesTable, userAgentGrants, users } from '@/db/schema';
-import { sql } from 'drizzle-orm';
-import { eq } from 'drizzle-orm';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { isDbAvailable } from '../utils';
 
 describe.skipIf(!(await isDbAvailable()))('ScopeEnforcer', () => {

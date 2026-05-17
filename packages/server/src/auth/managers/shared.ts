@@ -1,6 +1,6 @@
+import type { OAuth2IntegrationInputs } from '@reaatech/agent-auth-proxy-core';
 import { OAuth2Manager } from '@/auth/managers/oauth2Manager';
 import { config } from '@/config';
-import type { OAuth2IntegrationInputs } from '@reaatech/agent-auth-proxy-core';
 
 let instance: OAuth2Manager | null = null;
 

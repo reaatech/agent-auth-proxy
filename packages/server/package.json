@@ -14,7 +14,9 @@
   "bin": {
     "agent-auth-proxy-server": "./dist/bin.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -63,7 +65,16 @@
   "engines": {
     "node": ">=22.0.0"
   },
-  "keywords": ["proxy", "auth", "oauth2", "api", "agent", "identity", "security", "fastify"],
+  "keywords": [
+    "proxy",
+    "auth",
+    "oauth2",
+    "api",
+    "agent",
+    "identity",
+    "security",
+    "fastify"
+  ],
   "author": "Rick Somers <rick@reaatech.com> (https://reaatech.com)",
   "license": "MIT",
   "repository": {

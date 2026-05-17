@@ -1,11 +1,11 @@
+import { oauthInitiateSchema, proxyRequestSchema } from '@reaatech/agent-auth-proxy-core';
+/* eslint-disable @typescript-eslint/unbound-method */
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   authenticateAgent,
   authenticateAgentWithApiKey,
   requireAdmin,
 } from '@/api/middleware/auth';
-import { oauthInitiateSchema, proxyRequestSchema } from '@reaatech/agent-auth-proxy-core';
-/* eslint-disable @typescript-eslint/unbound-method */
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('Validation schemas', () => {
   it('should validate proxy request', () => {
