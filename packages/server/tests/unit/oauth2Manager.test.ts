@@ -1,8 +1,8 @@
+import { eq } from 'drizzle-orm';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { OAuth2Manager } from '@/auth/managers/oauth2Manager';
 import { db } from '@/db';
 import { oauthStates, oauthTokens, users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { isDbAvailable } from '../utils';
 
 describe.skipIf(!(await isDbAvailable()))('OAuth2Manager', () => {
@@ -21,7 +21,7 @@ describe.skipIf(!(await isDbAvailable()))('OAuth2Manager', () => {
     ],
   });
 
-  const userId = '00000000-0000-0000-0000-000000000002';
+  const userId = '00000000-0000-4000-8000-000000000002';
 
   beforeEach(async () => {
     await db.delete(oauthStates).where(eq(oauthStates.userId, userId));

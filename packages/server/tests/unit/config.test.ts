@@ -21,7 +21,6 @@ describe('Config validation', () => {
     if (originalDbUrl !== undefined) {
       process.env.DATABASE_URL = originalDbUrl;
     } else {
-      // biome-ignore lint/performance/noDelete: process.env requires delete to actually unset
       delete process.env.DATABASE_URL;
     }
     vi.resetModules();
@@ -32,7 +31,6 @@ describe('Config validation', () => {
     const originalMasterKey = process.env.MASTER_KEY;
     const originalDbUrl = process.env.DATABASE_URL;
     process.env.NODE_ENV = 'production';
-    // biome-ignore lint/performance/noDelete: process.env requires delete to actually unset
     delete process.env.MASTER_KEY;
     process.env.DATABASE_URL = 'postgresql://prod:prod@localhost:5432/prod';
 
@@ -46,7 +44,6 @@ describe('Config validation', () => {
     if (originalDbUrl !== undefined) {
       process.env.DATABASE_URL = originalDbUrl;
     } else {
-      // biome-ignore lint/performance/noDelete: process.env requires delete to actually unset
       delete process.env.DATABASE_URL;
     }
     vi.resetModules();

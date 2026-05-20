@@ -1,10 +1,10 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { config } from '@/config';
-import { db } from '@/db';
-import { agents } from '@/db/schema';
 import { AuthError } from '@reaatech/agent-auth-proxy-core';
 import { eq } from 'drizzle-orm';
 import type { FastifyReply, FastifyRequest } from 'fastify';
+import { config } from '@/config';
+import { db } from '@/db';
+import { agents } from '@/db/schema';
 
 export async function authenticateAgent(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -51,7 +51,7 @@ export async function authenticateAgentWithApiKey(request: FastifyRequest, reply
   const authHeader = request.headers.authorization || '';
   const apiKey = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
 
-  if (!apiKey || !apiKey.startsWith('aap_')) {
+  if (!apiKey?.startsWith('aap_')) {
     reply.code(401).send({
       error: 'INVALID_API_KEY',
       message: 'Valid agent API key required (Bearer aap_...)',
@@ -64,7 +64,7 @@ export async function authenticateAgentWithApiKey(request: FastifyRequest, reply
     where: eq(agents.apiKeyHash, apiKeyHash),
   });
 
-  if (!agent || !agent.active) {
+  if (!agent?.active) {
     reply.code(401).send({
       error: 'INVALID_API_KEY',
       message: 'Agent not found or inactive',

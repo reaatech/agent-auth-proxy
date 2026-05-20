@@ -1,5 +1,5 @@
-import { config } from '@/config';
 import pino from 'pino';
+import { config } from '@/config';
 
 const buildTransport = () => {
   if (config.nodeEnv !== 'development') return undefined;

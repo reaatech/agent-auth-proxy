@@ -1,3 +1,9 @@
+import cors from '@fastify/cors';
+import helmet from '@fastify/helmet';
+import jwt from '@fastify/jwt';
+import rateLimit from '@fastify/rate-limit';
+import fastify from 'fastify';
+import { Counter, collectDefaultMetrics, Histogram, register } from 'prom-client';
 import { authRoutes } from '@/api/routes/auth';
 import { healthRoutes } from '@/api/routes/health';
 import { managementRoutes } from '@/api/routes/management';
@@ -7,12 +13,6 @@ import { startAuditRetentionCleanup } from '@/services/auditCleanup';
 import { getAuditLogger } from '@/services/auditService';
 import { startOAuthStateCleanup } from '@/services/oauthCleanup';
 import { logger } from '@/utils/logger';
-import cors from '@fastify/cors';
-import helmet from '@fastify/helmet';
-import jwt from '@fastify/jwt';
-import rateLimit from '@fastify/rate-limit';
-import fastify from 'fastify';
-import { Counter, Histogram, collectDefaultMetrics, register } from 'prom-client';
 
 let metricsInitialized = false;
 let shutdownSignalled = false;

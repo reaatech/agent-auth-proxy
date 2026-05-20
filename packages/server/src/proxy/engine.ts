@@ -1,3 +1,13 @@
+import {
+  AppError,
+  AuthError,
+  proxyParamsSchema,
+  ScopeError,
+  UpstreamError,
+  ValidationError,
+} from '@reaatech/agent-auth-proxy-core';
+import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
+import { z } from 'zod';
 import { authenticateAgent } from '@/api/middleware/auth';
 import { KeyVault } from '@/auth/managers/keyVault';
 import { ScopeEnforcer } from '@/auth/managers/scopeManager';
@@ -5,16 +15,6 @@ import { getOAuth2Manager } from '@/auth/managers/shared';
 import { config } from '@/config';
 import { type AuditLogger, getAuditLogger } from '@/services/auditService';
 import { logger } from '@/utils/logger';
-import {
-  AppError,
-  AuthError,
-  ScopeError,
-  UpstreamError,
-  ValidationError,
-  proxyParamsSchema,
-} from '@reaatech/agent-auth-proxy-core';
-import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
-import { z } from 'zod';
 
 const uuidSchema = z.string().uuid();
 

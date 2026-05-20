@@ -1,19 +1,19 @@
+import { oauthInitiateSchema, proxyRequestSchema } from '@reaatech/agent-auth-proxy-core';
+/* eslint-disable @typescript-eslint/unbound-method */
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   authenticateAgent,
   authenticateAgentWithApiKey,
   requireAdmin,
 } from '@/api/middleware/auth';
-import { oauthInitiateSchema, proxyRequestSchema } from '@reaatech/agent-auth-proxy-core';
-/* eslint-disable @typescript-eslint/unbound-method */
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('Validation schemas', () => {
   it('should validate proxy request', () => {
     const valid = {
       provider: 'google',
       path: '/v1/calendars',
-      userId: '00000000-0000-0000-0000-000000000001',
-      agentId: '00000000-0000-0000-0000-000000000002',
+      userId: '00000000-0000-4000-8000-000000000001',
+      agentId: '00000000-0000-4000-8000-000000000002',
     };
     expect(proxyRequestSchema.safeParse(valid).success).toBe(true);
   });
@@ -22,8 +22,8 @@ describe('Validation schemas', () => {
     const invalid = {
       provider: 'Google!',
       path: '/v1/calendars',
-      userId: '00000000-0000-0000-0000-000000000001',
-      agentId: '00000000-0000-0000-0000-000000000002',
+      userId: '00000000-0000-4000-8000-000000000001',
+      agentId: '00000000-0000-4000-8000-000000000002',
     };
     expect(proxyRequestSchema.safeParse(invalid).success).toBe(false);
   });
@@ -33,14 +33,14 @@ describe('Validation schemas', () => {
       provider: 'google',
       path: '/v1/calendars',
       userId: 'not-a-uuid',
-      agentId: '00000000-0000-0000-0000-000000000002',
+      agentId: '00000000-0000-4000-8000-000000000002',
     };
     expect(proxyRequestSchema.safeParse(invalid).success).toBe(false);
   });
 
   it('should validate OAuth initiate', () => {
     const valid = {
-      user_id: '00000000-0000-0000-0000-000000000001',
+      user_id: '00000000-0000-4000-8000-000000000001',
       provider: 'google',
       scopes: 'email,profile',
     };

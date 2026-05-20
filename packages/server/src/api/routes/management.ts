@@ -1,13 +1,13 @@
 import { createHash, randomBytes } from 'node:crypto';
+import { ValidationError } from '@reaatech/agent-auth-proxy-core';
+import { desc, eq } from 'drizzle-orm';
+import type { FastifyPluginAsync } from 'fastify';
+import { z } from 'zod';
 import { requireAdmin } from '@/api/middleware/auth';
 import { ScopeEnforcer } from '@/auth/managers/scopeManager';
 import { db } from '@/db';
 import { agents, oauthTokens, userAgentGrants, users } from '@/db/schema';
 import { getAuditLogger } from '@/services/auditService';
-import { ValidationError } from '@reaatech/agent-auth-proxy-core';
-import { desc, eq } from 'drizzle-orm';
-import type { FastifyPluginAsync } from 'fastify';
-import { z } from 'zod';
 
 const createUserSchema = z.object({
   email: z.string().email(),

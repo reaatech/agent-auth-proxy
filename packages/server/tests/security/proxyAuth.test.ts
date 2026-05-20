@@ -1,9 +1,9 @@
 import { createHash } from 'node:crypto';
+import supertest from 'supertest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { buildApp } from '@/app';
 import { db } from '@/db';
 import { agents } from '@/db/schema';
-import supertest from 'supertest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { isDbAvailable } from '../utils';
 
 describe.skipIf(!(await isDbAvailable()))('Security: Proxy Authentication', () => {

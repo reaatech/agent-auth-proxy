@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { oauthInitiateSchema, proxyParamsSchema, proxyRequestSchema } from '../src/schemas';
 
-const VALID_UUID = '00000000-0000-0000-0000-000000000001';
+const VALID_UUID = '00000000-0000-4000-8000-000000000001';
 
 describe('proxyParamsSchema', () => {
   it('accepts a valid provider/path pair', () => {

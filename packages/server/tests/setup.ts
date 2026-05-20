@@ -1,6 +1,6 @@
-import { db } from '@/db';
 import { sql } from 'drizzle-orm';
 import { afterAll, afterEach, beforeAll } from 'vitest';
+import { db } from '@/db';
 
 let dbAvailable = false;
 

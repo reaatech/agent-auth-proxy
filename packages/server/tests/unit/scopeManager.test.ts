@@ -1,14 +1,13 @@
+import { eq, sql } from 'drizzle-orm';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ScopeEnforcer } from '@/auth/managers/scopeManager';
 import { db } from '@/db';
 import { agents, scopes as scopesTable, userAgentGrants, users } from '@/db/schema';
-import { sql } from 'drizzle-orm';
-import { eq } from 'drizzle-orm';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { isDbAvailable } from '../utils';
 
 describe.skipIf(!(await isDbAvailable()))('ScopeEnforcer', () => {
-  const userId = '00000000-0000-0000-0000-000000000010';
-  const agentId = '00000000-0000-0000-0000-000000000011';
+  const userId = '00000000-0000-4000-8000-000000000010';
+  const agentId = '00000000-0000-4000-8000-000000000011';
 
   describe('validation', () => {
     let enforcer: ScopeEnforcer;
