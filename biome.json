@@ -4,7 +4,8 @@
     "includes": ["**", "!!**/dist", "!!**/coverage", "!!**/node_modules", "!!**/.turbo"]
   },
   "assist": {
-    "enabled": true
+    "enabled": true,
+    "actions": { "source": { "organizeImports": "on" } }
   },
   "linter": {
     "enabled": true,
