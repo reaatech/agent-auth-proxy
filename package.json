@@ -66,7 +66,7 @@
       "@esbuild-kit/core-utils>esbuild": ">=0.25.0",
       "fast-uri": ">=3.1.2",
       "fast-jwt": ">=6.2.4",
-    "qs": ">=6.15.2"
+      "qs": ">=6.15.2"
     }
   }
 }
