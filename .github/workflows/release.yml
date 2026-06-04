@@ -49,7 +49,12 @@ jobs:
           commit: 'chore(release): version packages'
           title: 'chore(release): version packages'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use a PAT instead of the built-in GITHUB_TOKEN because the
+          # org/repo has "Allow GitHub Actions to create and approve pull
+          # requests" disabled, which causes the built-in token to return
+          # a 403 when the action tries to open the release PR.
+          # The PAT must have `repo` and `workflow` scopes.
+          GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
           # setup-node's registry-url writes an .npmrc that authenticates via
           # NODE_AUTH_TOKEN; without it the publish runs anonymously and npm
           # returns E404 on PUT. NPM_TOKEN is kept for the changesets action's
