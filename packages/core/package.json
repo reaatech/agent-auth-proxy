@@ -1,6 +1,6 @@
 {
   "name": "@reaatech/agent-auth-proxy-core",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Shared types, zod schemas, and error classes for agent-auth-proxy",
   "type": "module",
   "main": "./dist/index.js",
