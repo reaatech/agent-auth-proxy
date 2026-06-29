@@ -29,7 +29,7 @@
     "@reaatech/agent-auth-proxy-core": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^26.0.0",
+    "@types/node": "^26.0.1",
     "@vitest/coverage-v8": "^4.1.9",
     "tsup": "^8.0.1",
     "typescript": "^6.0.3",
